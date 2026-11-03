@@ -1,0 +1,78 @@
+.toast-container
+  position: fixed
+  z-index: 1000
+  top: 1rem
+  right: max(1rem, calc((100vw - 1360px) / 2))
+  width: min(25rem, calc(100vw - 2rem))
+  pointer-events: none
+
+.toast
+  display: flex
+  align-items: flex-start
+  gap: 0.75rem
+  padding: 1rem
+  border: 1px solid #d5eadf
+  border-radius: 0.85rem
+  background: #fff
+  box-shadow: 0 16px 42px rgba(20, 42, 68, 0.16)
+  color: #23384e
+  animation: toast-enter 180ms ease-out
+  pointer-events: auto
+
+.toast-error
+  border-color: #f0d2cf
+
+.toast-icon
+  display: grid
+  width: 2rem
+  height: 2rem
+  flex: 0 0 auto
+  place-items: center
+  border-radius: 50%
+  background: #e8f7ef
+  color: #218558
+  font-size: 1.05rem
+
+.toast-error .toast-icon
+  background: #fff0ee
+  color: #bb392e
+
+.toast-copy
+  display: flex
+  min-width: 0
+  flex: 1
+  flex-direction: column
+  gap: 0.15rem
+
+.toast-copy strong
+  font-size: 0.82rem
+  font-weight: 700
+
+.toast-copy > span
+  color: #75869a
+  font-size: 0.74rem
+  overflow-wrap: anywhere
+
+.toast-dismiss
+  display: grid
+  width: 1.8rem
+  height: 1.8rem
+  flex: 0 0 auto
+  place-items: center
+  border: 0
+  border-radius: 0.45rem
+  background: transparent
+  color: #8594a5
+  cursor: pointer
+
+.toast-dismiss:hover
+  background: #f1f4f8
+  color: #344a62
+
+@keyframes toast-enter
+  from
+    opacity: 0
+    transform: translateY(-0.45rem)
+  to
+    opacity: 1
+    transform: translateY(0)

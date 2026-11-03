@@ -1,0 +1,471 @@
+<app-ui-overlays
+  [message]="toastMessage()"
+  (dismiss)="toastMessage.set(null)"
+/>
+
+<div class="inventory-app">
+  <header class="app-topbar">
+    <div class="topbar-inner">
+      <a
+        class="brand"
+        routerLink="/products"
+        aria-label="ZEISS Product Management home"
+      >
+        <span class="brand-mark" aria-hidden="true"
+          ><i class="pi pi-eye"></i
+        ></span>
+        <span class="brand-wordmark">ZEISS</span>
+        <span class="brand-divider" aria-hidden="true"></span>
+        <span class="brand-product">Product management</span>
+      </a>
+      <div class="workspace-indicator">
+        <span class="workspace-indicator-icon"><i class="pi pi-box"></i></span>
+        <span>Inventory workspace</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-shell">
+    <section class="page-intro">
+      <div>
+        <p class="eyebrow">
+          <span class="eyebrow-mark"></span> PRODUCT OPERATIONS
+        </p>
+        <h1>Product inventory RELOAD2222</h1>
+        <p class="subtitle">
+          A clear view of your catalog, stock levels and product value.
+        </p>
+      </div>
+      <button
+        class="button button-primary create-product-button"
+        type="button"
+        (click)="openCreateDialog()"
+      >
+        <i class="pi pi-plus" aria-hidden="true"></i>
+        New product
+      </button>
+    </section>
+
+    <section class="metric-grid" aria-label="Current inventory summary">
+      <article class="metric-card">
+        <span class="metric-icon icon-blue"><i class="pi pi-box"></i></span>
+        <div class="metric-copy">
+          <span class="metric-label">Catalog products</span>
+          <strong class="metric-value">{{ store.totalCount() }}</strong>
+          <span class="metric-caption">products in catalog</span>
+        </div>
+      </article>
+      <article class="metric-card">
+        <span class="metric-icon icon-violet"
+          ><i class="pi pi-database"></i
+        ></span>
+        <div class="metric-copy">
+          <span class="metric-label">Units in view</span>
+          <strong class="metric-value">{{ pageMetrics().units }}</strong>
+          <span class="metric-caption">on the current page</span>
+        </div>
+      </article>
+      <article class="metric-card">
+        <span class="metric-icon icon-amber"
+          ><i class="pi pi-exclamation-triangle"></i
+        ></span>
+        <div class="metric-copy">
+          <span class="metric-label">Low stock</span>
+          <strong class="metric-value">{{ pageMetrics().lowStock }}</strong>
+          <span class="metric-caption">items on this page</span>
+        </div>
+      </article>
+      <article class="metric-card">
+        <span class="metric-icon icon-green"
+          ><i class="pi pi-chart-line"></i
+        ></span>
+        <div class="metric-copy">
+          <span class="metric-label">Stock value</span>
+          <strong class="metric-value metric-currency">
+            {{
+              pageMetrics().stockValue
+                | currency: "EUR" : "symbol" : "1.0-0" : "de-DE"
+            }}
+          </strong>
+          <span class="metric-caption">value on this page</span>
+        </div>
+      </article>
+    </section>
+
+    <section class="content-panel">
+      <div class="section-heading">
+        <div>
+          <div class="section-title-row">
+            <h2>Product catalog</h2>
+            <span class="count-chip">{{ store.totalCount() }} products</span>
+          </div>
+          <p>Search, filter and manage your products.</p>
+        </div>
+        <span class="snapshot-label">
+          <i class="pi pi-chart-bar" aria-hidden="true"></i>
+          Summary reflects current page
+        </span>
+      </div>
+
+      <section class="toolbar" aria-label="Product search and filters">
+        <div class="search-field">
+          <label for="product-search">Search products</label>
+          <span class="search-control">
+            <i class="pi pi-search" aria-hidden="true"></i>
+            <input
+              id="product-search"
+              type="search"
+              [formControl]="searchControl"
+              placeholder="Search by name"
+              autocomplete="off"
+            />
+          </span>
+        </div>
+
+        <div class="stock-filters" [formGroup]="filtersForm">
+          <span class="filter-label">Stock range</span>
+          <div class="filter-field">
+            <label for="min-stock">Minimum</label>
+            <input
+              id="min-stock"
+              type="number"
+              min="0"
+              formControlName="minStock"
+              placeholder="Any"
+            />
+          </div>
+          <span class="range-separator" aria-hidden="true">to</span>
+          <div class="filter-field">
+            <label for="max-stock">Maximum</label>
+            <input
+              id="max-stock"
+              type="number"
+              min="0"
+              formControlName="maxStock"
+              placeholder="Any"
+            />
+          </div>
+          <div class="filter-actions">
+            <button
+              class="button button-quiet button-small"
+              type="button"
+              (click)="clearFilters()"
+            >
+              Reset
+            </button>
+          </div>
+        </div>
+      </section>
+
+      @if (filterError(); as error) {
+        <p class="inline-error" role="alert">
+          <i class="pi pi-exclamation-circle" aria-hidden="true"></i>
+          {{ error }}
+        </p>
+      }
+
+      @if (store.errorMessage(); as error) {
+        <div class="error-banner" role="alert">
+          <div class="error-copy">
+            <span class="error-icon"><i class="pi pi-wifi"></i></span>
+            <div>
+              <strong>We couldn't load your inventory</strong>
+              <p>{{ error }}</p>
+            </div>
+          </div>
+          <button
+            class="button button-outline-danger"
+            type="button"
+            (click)="store.refresh()"
+          >
+            <i class="pi pi-refresh" aria-hidden="true"></i>
+            Try again
+          </button>
+        </div>
+      }
+
+      @if (store.loading()) {
+        <div class="loading-track" role="status" aria-label="Loading inventory">
+          <span></span>
+        </div>
+      }
+
+      <div class="table-wrap">
+        <table class="product-table">
+          <thead>
+            <tr>
+              <th scope="col" class="identifier-heading">Identifier</th>
+              <th scope="col">Product</th>
+              <th scope="col">Unit price</th>
+              <th scope="col">Availability</th>
+              <th scope="col" class="actions-heading">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (
+              product of store.products();
+              track product.productIdentifier
+            ) {
+              <tr>
+                <td class="identifier">{{ product.productIdentifier }}</td>
+                <td>
+                  <div class="product-cell">
+                    <span class="product-avatar" aria-hidden="true">{{
+                      product.name.charAt(0)
+                    }}</span>
+                    <span class="product-copy">
+                      <strong>{{ product.name }}</strong>
+                      <span>{{
+                        product.description || "No description provided"
+                      }}</span>
+                    </span>
+                  </div>
+                </td>
+                <td class="price-cell">
+                  {{
+                    product.price
+                      | currency: "EUR" : "symbol" : "1.2-2" : "de-DE"
+                  }}
+                </td>
+                <td>
+                  <div class="stock-cell">
+                    <strong class="stock-quantity">{{
+                      product.availableStock
+                    }}</strong>
+                    <span
+                      class="stock-status"
+                      [class.status-low]="
+                        product.availableStock > 0 && product.availableStock < 5
+                      "
+                      [class.status-out]="product.availableStock === 0"
+                      [class.status-ok]="product.availableStock >= 5"
+                    >
+                      <span class="status-dot" aria-hidden="true"></span>
+                      {{ product.availableStock | stockStatus }}
+                    </span>
+                  </div>
+                </td>
+                <td>
+                  <div class="row-actions">
+                    <button
+                      class="icon-button"
+                      type="button"
+                      [attr.aria-label]="'Edit ' + product.name"
+                      title="Edit product"
+                      (click)="openEditDialog(product)"
+                    >
+                      <i class="pi pi-pencil" aria-hidden="true"></i>
+                    </button>
+                    <button
+                      class="icon-button"
+                      type="button"
+                      [attr.aria-label]="'Add stock to ' + product.name"
+                      title="Add stock"
+                      (click)="openStockDialog(product, 'add')"
+                    >
+                      <i class="pi pi-plus" aria-hidden="true"></i>
+                    </button>
+                    <button
+                      class="icon-button icon-warn"
+                      type="button"
+                      [attr.aria-label]="'Reduce stock for ' + product.name"
+                      title="Reduce stock"
+                      (click)="openStockDialog(product, 'decrement')"
+                    >
+                      <i class="pi pi-minus" aria-hidden="true"></i>
+                    </button>
+                    <button
+                      class="icon-button icon-danger"
+                      type="button"
+                      [attr.aria-label]="'Delete ' + product.name"
+                      title="Delete product"
+                      (click)="confirmDelete(product)"
+                    >
+                      <i class="pi pi-trash" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5" class="empty-cell">
+                  <div class="empty-state">
+                    <span class="empty-icon"><i class="pi pi-box"></i></span>
+                    <strong>
+                      {{
+                        store.loading()
+                          ? "Loading your catalog"
+                          : store.errorMessage()
+                            ? "Inventory unavailable"
+                            : "No products found"
+                      }}
+                    </strong>
+                    <span>
+                      @if (store.loading()) {
+                        Your inventory will appear here in a moment.
+                      } @else if (store.errorMessage()) {
+                        Check your connection and try again.
+                      } @else if (
+                        store.query().search ||
+                        store.query().minStock !== null ||
+                        store.query().maxStock !== null
+                      ) {
+                        Try adjusting your search or stock filters.
+                      } @else {
+                        Add your first product to start managing inventory.
+                      }
+                    </span>
+                    @if (
+                      !store.loading() &&
+                      !store.errorMessage() &&
+                      !store.query().search &&
+                      store.totalCount() === 0
+                    ) {
+                      <button
+                        class="button button-quiet empty-action"
+                        type="button"
+                        (click)="openCreateDialog()"
+                      >
+                        <i class="pi pi-plus" aria-hidden="true"></i>
+                        Create first product
+                      </button>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-pagination">
+        <span class="pagination-summary">
+          Showing
+          <strong>{{ pagination().start }}–{{ pagination().end }}</strong> of
+          <strong>{{ store.totalCount() }}</strong> products
+        </span>
+        <div class="pagination-controls">
+          <label for="page-size">Rows</label>
+          <select
+            id="page-size"
+            [value]="store.query().pageSize"
+            (change)="setPageSize($event)"
+          >
+            <option [value]="10">10</option>
+            <option [value]="25">25</option>
+            <option [value]="50">50</option>
+          </select>
+          <span class="page-count"
+            >Page {{ store.query().page }} of
+            {{ pagination().totalPages }}</span
+          >
+          <button
+            class="icon-button pagination-button"
+            type="button"
+            aria-label="Previous page"
+            [disabled]="store.query().page <= 1 || store.loading()"
+            (click)="previousPage()"
+          >
+            <i class="pi pi-chevron-left" aria-hidden="true"></i>
+          </button>
+          <button
+            class="icon-button pagination-button"
+            type="button"
+            aria-label="Next page"
+            [disabled]="
+              store.query().page >= pagination().totalPages || store.loading()
+            "
+            (click)="nextPage()"
+          >
+            <i class="pi pi-chevron-right" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <footer class="page-footer">
+      <span>ZEISS Product Management</span>
+      <span>Inventory control · Built for precision</span>
+    </footer>
+  </main>
+</div>
+
+<dialog
+  #productDialog
+  class="modal-dialog product-dialog"
+  aria-labelledby="product-dialog-title"
+  (cancel)="onProductDialogCancel($event)"
+  (click)="onProductDialogClick($event)"
+  (close)="onProductDialogClosed()"
+>
+  <div class="dialog-header">
+    <h2 id="product-dialog-title">
+      {{ editingProduct() ? "Edit product" : "Create product" }}
+    </h2>
+    <button
+      class="icon-button close-button"
+      type="button"
+      aria-label="Close dialog"
+      (click)="closeProductDialog()"
+    >
+      <i class="pi pi-times" aria-hidden="true"></i>
+    </button>
+  </div>
+  <div class="dialog-content">
+    <app-product-form
+      [product]="editingProduct()"
+      [saving]="savingProduct()"
+      [validationErrors]="productValidationErrors()"
+      (saved)="saveProduct($event)"
+      (cancelled)="closeProductDialog()"
+    />
+  </div>
+</dialog>
+
+<dialog
+  #deleteDialog
+  class="modal-dialog confirmation-dialog"
+  aria-labelledby="delete-dialog-title"
+  (cancel)="onDeleteDialogCancel($event)"
+  (click)="onDeleteDialogClick($event)"
+  (close)="onDeleteDialogClosed()"
+>
+  @if (pendingDeleteProduct(); as product) {
+    <div class="confirmation-content">
+      <span class="confirmation-icon"
+        ><i class="pi pi-trash" aria-hidden="true"></i
+      ></span>
+      <h2 id="delete-dialog-title">Delete this product?</h2>
+      <p>
+        <strong>{{ product.name }}</strong> will be permanently removed from
+        your catalog.
+      </p>
+      <div class="confirmation-actions">
+        <button
+          class="button button-secondary"
+          type="button"
+          (click)="cancelDelete()"
+        >
+          Keep product
+        </button>
+        <button
+          class="button button-danger"
+          type="button"
+          (click)="deletePendingProduct()"
+        >
+          Delete product
+        </button>
+      </div>
+    </div>
+  }
+</dialog>
+
+<app-stock-adjustment-dialog
+  [visible]="stockDialogVisible()"
+  (visibleChange)="stockDialogVisible.set($event)"
+  [product]="stockProduct()"
+  [operation]="stockOperation()"
+  [saving]="savingStock()"
+  [validationErrors]="stockValidationErrors()"
+  (submitted)="adjustStock($event)"
+/>

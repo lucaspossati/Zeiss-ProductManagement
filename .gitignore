@@ -1,0 +1,40 @@
+# Deployment secrets and environment files
+.env
+.env.*
+!.env.example
+**/secrets.json
+**/secrets.*.json
+**/secrets/
+**/appsettings.*.local.json
+**/*.pfx
+**/*.p12
+**/*.pem
+**/*.key
+
+# .NET build outputs and test artifacts
+**/bin/
+**/obj/
+**/TestResults/
+**/artifacts/
+**/coverage/
+**/.vs/
+*.user
+*.suo
+
+# Angular and Node build outputs
+**/node_modules/
+**/dist/
+**/.angular/
+**/out-tsc/
+**/.cache/
+
+# Docker and local data
+docker-data/
+**/mssql_data/
+
+# Temporary and operating-system files
+*.log
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db

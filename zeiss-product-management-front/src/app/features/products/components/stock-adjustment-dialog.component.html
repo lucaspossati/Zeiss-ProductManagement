@@ -1,0 +1,57 @@
+<dialog
+  #stockDialog
+  class="modal-dialog stock-dialog"
+  aria-labelledby="stock-dialog-title"
+  (cancel)="cancelDialog($event)"
+  (click)="onDialogClick($event)"
+  (close)="onDialogClosed()"
+>
+  @if (product(); as selectedProduct) {
+    <div class="dialog-header">
+      <h2 id="stock-dialog-title">{{ operation() === 'add' ? 'Add stock' : 'Reduce stock' }}</h2>
+      <button class="icon-button close-button" type="button" aria-label="Close dialog" (click)="cancelDialog()">
+        <i class="pi pi-times" aria-hidden="true"></i>
+      </button>
+    </div>
+    <form class="stock-form dialog-content" (ngSubmit)="submit()">
+      @if (generalErrors().length > 0) {
+        <div class="form-error-summary" role="alert">
+          @for (error of generalErrors(); track error.code + error.message) {
+            <p>{{ error.message }}</p>
+          }
+        </div>
+      }
+      <p>
+        {{ operation() === 'add' ? 'Add units to' : 'Remove units from' }}
+        <strong>{{ selectedProduct.name }}</strong>.
+        Current stock: {{ selectedProduct.availableStock }}.
+      </p>
+      <label for="stock-quantity">Quantity</label>
+      <input
+        id="stock-quantity"
+        class="form-control"
+        type="number"
+        [formControl]="quantity"
+        min="1"
+        max="2147483647"
+        step="1"
+        inputmode="numeric"
+      />
+      @if (quantity.touched && quantity.invalid) {
+        <small class="field-error">Enter a positive whole number.</small>
+      }
+      @for (error of quantityErrors(); track error.code + error.message) {
+        <small class="field-error" role="alert">{{ error.message }}</small>
+      }
+      <div class="form-actions">
+        <button class="button button-secondary" type="button" (click)="cancelDialog()">Cancel</button>
+        <button class="button button-primary" type="submit" [disabled]="quantity.invalid || saving()">
+          @if (saving()) {
+            <span class="button-spinner" aria-hidden="true"></span>
+          }
+          {{ operation() === 'add' ? 'Add stock' : 'Reduce stock' }}
+        </button>
+      </div>
+    </form>
+  }
+</dialog>

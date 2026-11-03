@@ -1,0 +1,915 @@
+.inventory-page-host
+  display: block
+  min-height: 100vh
+
+.inventory-app
+  min-height: 100vh
+
+.app-topbar
+  position: sticky
+  z-index: 20
+  top: 0
+  border-bottom: 1px solid rgba(222, 230, 239, 0.85)
+  background: rgba(255, 255, 255, 0.92)
+  backdrop-filter: blur(18px)
+
+.topbar-inner
+  display: flex
+  width: min(1360px, calc(100% - 3rem))
+  height: 4.5rem
+  margin: 0 auto
+  align-items: center
+  justify-content: space-between
+
+.brand
+  display: inline-flex
+  align-items: center
+  gap: 0.7rem
+  color: var(--zeiss-ink)
+  text-decoration: none
+
+.brand-mark
+  display: grid
+  width: 2rem
+  height: 2rem
+  place-items: center
+  border-radius: 0.55rem
+  background: linear-gradient(145deg, #0879ee, #004bb8)
+  color: #fff
+  font-size: 0.95rem
+
+.brand-wordmark
+  color: #0056c7
+  font-size: 1.1rem
+  font-weight: 800
+  letter-spacing: 0.075em
+
+.brand-divider
+  width: 1px
+  height: 1.5rem
+  margin: 0 0.25rem
+  background: #dce4ee
+
+.brand-product
+  color: #65768c
+  font-size: 0.85rem
+  font-weight: 550
+
+.workspace-indicator
+  display: inline-flex
+  align-items: center
+  gap: 0.55rem
+  color: #566a82
+  font-size: 0.8rem
+  font-weight: 600
+
+.workspace-indicator-icon
+  display: grid
+  width: 1.85rem
+  height: 1.85rem
+  place-items: center
+  border: 1px solid #e6ecf3
+  border-radius: 50%
+  background: #f8fafc
+  color: #4a6688
+  font-size: 0.75rem
+
+.page-shell
+  width: min(1360px, calc(100% - 3rem))
+  margin: 0 auto
+  padding: 2.35rem 0 1.5rem
+
+.page-intro
+  display: flex
+  align-items: flex-end
+  justify-content: space-between
+  gap: 1.5rem
+  margin-bottom: 1.65rem
+
+.eyebrow
+  display: flex
+  align-items: center
+  gap: 0.55rem
+  margin: 0 0 0.6rem
+  color: #58708e
+  font-size: 0.69rem
+  font-weight: 750
+  letter-spacing: 0.14em
+
+.eyebrow-mark
+  width: 1.15rem
+  height: 2px
+  border-radius: 2px
+  background: #1680ed
+
+h1
+  margin: 0
+  color: #12243a
+  font-size: clamp(2rem, 3.2vw, 2.65rem)
+  font-weight: 720
+  letter-spacing: -0.045em
+  line-height: 1.12
+
+.subtitle
+  margin: 0.65rem 0 0
+  color: #687b91
+  font-size: 0.95rem
+
+.create-product-button
+  min-height: 2.85rem
+  padding-inline: 1.15rem
+  border-radius: 0.7rem
+  box-shadow: 0 5px 13px rgba(0, 99, 216, 0.16)
+  font-weight: 650
+
+.button
+  display: inline-flex
+  min-height: 2.55rem
+  align-items: center
+  justify-content: center
+  gap: 0.5rem
+  padding: 0.55rem 0.9rem
+  border: 1px solid transparent
+  border-radius: 0.65rem
+  font-size: 0.8rem
+  font-weight: 650
+  line-height: 1.2
+  text-decoration: none
+  cursor: pointer
+  transition: background-color 140ms ease, border-color 140ms ease, box-shadow 140ms ease, color 140ms ease
+
+.button:focus-visible,
+.icon-button:focus-visible,
+.pagination-controls select:focus-visible
+  outline: 3px solid rgba(0, 99, 216, 0.25)
+  outline-offset: 2px
+
+.button:disabled,
+.icon-button:disabled
+  opacity: 0.45
+  cursor: not-allowed
+
+.button-primary
+  background: #076bd2
+  color: #fff
+
+.button-primary:hover:not(:disabled)
+  background: #0058b9
+  box-shadow: 0 5px 14px rgba(0, 99, 216, 0.18)
+
+.button-secondary
+  border-color: #dce4ed
+  background: #fff
+  color: #50647b
+
+.button-secondary:hover:not(:disabled)
+  border-color: #c3d0de
+  background: #f7f9fc
+  color: #2e435a
+
+.button-quiet
+  background: transparent
+  color: #60738a
+
+.button-quiet:hover:not(:disabled)
+  background: #eef3f8
+  color: #304860
+
+.button-small
+  min-height: 2.55rem
+  padding-inline: 0.8rem
+  font-size: 0.75rem
+
+.button-outline-danger
+  border-color: #e8c1be
+  background: #fff
+  color: #ad3b32
+
+.button-outline-danger:hover
+  background: #fff0ee
+
+.button-danger
+  background: #b93831
+  color: #fff
+
+.button-danger:hover
+  background: #a42e28
+
+.icon-button
+  display: inline-grid
+  width: 2.15rem
+  height: 2.15rem
+  flex: 0 0 auto
+  place-items: center
+  border: 1px solid transparent
+  border-radius: 0.6rem
+  background: transparent
+  color: #657990
+  cursor: pointer
+  transition: background-color 140ms ease, color 140ms ease, border-color 140ms ease
+
+.icon-button:hover:not(:disabled)
+  border-color: #e5ebf2
+  background: #f4f7fa
+  color: #1d5eaa
+
+.icon-warn
+  color: #ad760e
+
+.icon-warn:hover:not(:disabled)
+  border-color: #f1e0bb
+  background: #fff8e9
+  color: #94620a
+
+.icon-danger
+  color: #b65b55
+
+.icon-danger:hover:not(:disabled)
+  border-color: #f2d5d2
+  background: #fff1ef
+  color: #a32e27
+
+.close-button
+  width: 2rem
+  height: 2rem
+
+.metric-grid
+  display: grid
+  grid-template-columns: repeat(4, minmax(0, 1fr))
+  gap: 1rem
+  margin-bottom: 1.35rem
+
+.metric-card
+  display: flex
+  min-height: 7.35rem
+  align-items: flex-start
+  gap: 0.9rem
+  padding: 1.25rem 1.2rem
+  border: 1px solid rgba(225, 232, 240, 0.95)
+  border-radius: 0.95rem
+  background: rgba(255, 255, 255, 0.94)
+  box-shadow: 0 5px 20px rgba(35, 57, 82, 0.035)
+  transition: box-shadow 160ms ease, transform 160ms ease
+
+.metric-card:hover
+  transform: translateY(-2px)
+  box-shadow: 0 12px 28px rgba(35, 57, 82, 0.08)
+
+.metric-icon
+  display: grid
+  width: 2.65rem
+  height: 2.65rem
+  flex: 0 0 auto
+  place-items: center
+  border-radius: 0.8rem
+  font-size: 1rem
+
+.icon-blue
+  background: #eaf3ff
+  color: #1473dc
+
+.icon-violet
+  background: #f0edff
+  color: #7054d8
+
+.icon-amber
+  background: #fff5e3
+  color: #c17a09
+
+.icon-green
+  background: #e8f7ef
+  color: #218558
+
+.metric-copy
+  display: flex
+  min-width: 0
+  flex-direction: column
+  align-items: flex-start
+
+.metric-label
+  color: #62758c
+  font-size: 0.77rem
+  font-weight: 600
+
+.metric-value
+  margin-top: 0.12rem
+  color: #152a43
+  font-size: 1.65rem
+  font-variant-numeric: tabular-nums
+  font-weight: 730
+  letter-spacing: -0.045em
+  line-height: 1.25
+
+.metric-currency
+  font-size: 1.48rem
+
+.metric-caption
+  margin-top: 0.18rem
+  color: #8a9aad
+  font-size: 0.7rem
+
+.content-panel
+  overflow: hidden
+  border: 1px solid rgba(224, 231, 239, 0.95)
+  border-radius: 1rem
+  background: var(--zeiss-surface)
+  box-shadow: var(--zeiss-shadow)
+
+.section-heading
+  display: flex
+  align-items: center
+  justify-content: space-between
+  gap: 1rem
+  padding: 1.5rem 1.55rem 1.25rem
+
+.section-title-row
+  display: flex
+  flex-wrap: wrap
+  align-items: center
+  gap: 0.7rem
+
+h2
+  margin: 0
+  color: #172b44
+  font-size: 1.05rem
+  font-weight: 700
+  letter-spacing: -0.02em
+
+.section-heading p
+  margin: 0.3rem 0 0
+  color: #8190a3
+  font-size: 0.8rem
+
+.count-chip
+  padding: 0.22rem 0.55rem
+  border: 1px solid #e4edf7
+  border-radius: 999px
+  background: #f5f9fd
+  color: #47627f
+  font-size: 0.68rem
+  font-weight: 650
+
+.snapshot-label
+  display: inline-flex
+  align-items: center
+  gap: 0.45rem
+  color: #8a99aa
+  font-size: 0.72rem
+
+.snapshot-label i
+  color: #7189a3
+  font-size: 0.75rem
+
+.toolbar
+  display: grid
+  grid-template-columns: minmax(15rem, 1fr) auto
+  align-items: end
+  gap: 1.25rem
+  padding: 1.1rem 1.55rem 1.3rem
+  border-top: 1px solid #f0f3f7
+  border-bottom: 1px solid #e9eef4
+  background: #fbfcfe
+
+.search-field
+  display: flex
+  min-width: 0
+  flex-direction: column
+  gap: 0.45rem
+
+.search-field label,
+.filter-field label
+  color: #53677f
+  font-size: 0.72rem
+  font-weight: 650
+
+.search-control
+  position: relative
+  display: block
+
+.search-control > i
+  position: absolute
+  z-index: 1
+  top: 50%
+  left: 0.85rem
+  transform: translateY(-50%)
+  color: #8a9bb0
+  font-size: 0.85rem
+  pointer-events: none
+
+.search-control input
+  width: 100%
+  min-height: 2.65rem
+  padding-left: 2.5rem
+  border-radius: 0.65rem
+
+.stock-filters
+  display: flex
+  align-items: flex-end
+  gap: 0.55rem
+  flex-wrap: wrap
+
+.filter-label
+  align-self: center
+  margin-right: 0.25rem
+  color: #718198
+  font-size: 0.7rem
+  font-weight: 650
+
+.filter-field
+  display: flex
+  width: 6.25rem
+  flex-direction: column
+  gap: 0.45rem
+
+.filter-field input
+  width: 100%
+  min-height: 2.55rem
+  padding: 0.5rem 0.6rem
+  border: 1px solid #dce4ed
+  border-radius: 0.6rem
+  outline: none
+  background: #fff
+  color: #31465f
+  font-size: 0.78rem
+
+.filter-field input:focus
+  border-color: #3b8be2
+  box-shadow: 0 0 0 3px rgba(0, 99, 216, 0.11)
+
+.filter-field input::placeholder
+  color: #a0adbb
+
+.range-separator
+  padding-bottom: 0.7rem
+  color: #9aa8b8
+  font-size: 0.75rem
+
+.filter-actions
+  display: flex
+  align-items: center
+  gap: 0.3rem
+  padding-bottom: 0.02rem
+
+.inline-error
+  display: flex
+  align-items: center
+  gap: 0.45rem
+  margin: 1rem 1.55rem 0
+  color: #b42318
+  font-size: 0.8rem
+
+.error-banner
+  display: flex
+  align-items: center
+  justify-content: space-between
+  gap: 1rem
+  margin: 1rem 1.55rem 0
+  padding: 0.9rem 1rem
+  border: 1px solid #f3c9c6
+  border-radius: 0.75rem
+  background: #fff8f7
+
+.error-copy
+  display: flex
+  align-items: center
+  gap: 0.75rem
+  min-width: 0
+
+.error-icon
+  display: grid
+  width: 2.25rem
+  height: 2.25rem
+  flex: 0 0 auto
+  place-items: center
+  border-radius: 50%
+  background: #fde9e7
+  color: #bb392e
+
+.error-copy strong
+  color: #8e2c25
+  font-size: 0.8rem
+
+.error-copy p
+  margin: 0.15rem 0 0
+  color: #a45b54
+  font-size: 0.74rem
+  overflow-wrap: anywhere
+
+.table-wrap
+  padding: 0 1rem
+
+.product-table
+  width: 100%
+  border-collapse: collapse
+  text-align: left
+
+.product-table thead th
+  height: 3.2rem
+  padding: 0 0.9rem
+  border-bottom: 1px solid #e8edf3
+  color: #8392a4
+  font-size: 0.67rem
+  font-weight: 700
+  letter-spacing: 0.055em
+  text-transform: uppercase
+  white-space: nowrap
+
+.product-table tbody td
+  height: 4.7rem
+  padding: 0.6rem 0.9rem
+  border-bottom: 1px solid #edf1f5
+  color: #42576e
+  font-size: 0.8rem
+  vertical-align: middle
+
+.product-table tbody tr:last-child td
+  border-bottom: 0
+
+.product-table tbody tr:hover:not(:has(.empty-state))
+  background: #fbfdff
+
+.identifier-heading
+  width: 8.5rem
+
+.actions-heading
+  width: 10rem
+  text-align: right
+
+.product-cell
+  display: flex
+  min-width: 12rem
+  align-items: center
+  gap: 0.75rem
+
+.product-avatar
+  display: grid
+  width: 2.35rem
+  height: 2.35rem
+  flex: 0 0 auto
+  place-items: center
+  border: 1px solid #dcecff
+  border-radius: 0.7rem
+  background: linear-gradient(145deg, #f3f8ff, #e6f1ff)
+  color: #2167b4
+  font-size: 0.9rem
+  font-weight: 700
+
+.product-copy
+  display: flex
+  min-width: 0
+  flex-direction: column
+  gap: 0.12rem
+
+.product-copy strong
+  color: #263b53
+  font-size: 0.82rem
+  font-weight: 650
+
+.product-copy > span
+  max-width: 25rem
+  overflow: hidden
+  color: #8a98a9
+  font-size: 0.72rem
+  text-overflow: ellipsis
+  white-space: nowrap
+
+.identifier
+  color: #6d8199
+  font-family: "Segoe UI", sans-serif
+  font-size: 0.75rem
+  font-variant-numeric: tabular-nums
+  letter-spacing: 0.025em
+
+.price-cell
+  color: #31465f
+  font-size: 0.82rem
+  font-variant-numeric: tabular-nums
+  font-weight: 600
+  white-space: nowrap
+
+.stock-cell
+  display: flex
+  align-items: center
+  gap: 0.6rem
+
+.stock-status
+  display: inline-flex
+  align-items: center
+  gap: 0.35rem
+  padding: 0.25rem 0.5rem
+  border-radius: 999px
+  background: #eaf6ef
+  color: #27754f
+  font-size: 0.65rem
+  font-weight: 650
+  white-space: nowrap
+
+.stock-status .status-dot
+  width: 0.38rem
+  height: 0.38rem
+  border-radius: 50%
+  background: currentColor
+
+.stock-status.status-low
+  background: #fff5e3
+  color: #9c690c
+
+.stock-status.status-out
+  background: #fff0ee
+  color: #aa3931
+
+.stock-quantity
+  min-width: 1.75rem
+  color: #263c54
+  font-size: 0.85rem
+  font-variant-numeric: tabular-nums
+  text-align: right
+
+.row-actions
+  display: flex
+  align-items: center
+  justify-content: flex-end
+  gap: 0.1rem
+
+.empty-cell
+  padding: 0 !important
+
+.loading-track
+  height: 2px
+  overflow: hidden
+  background: #e6f0fb
+
+.loading-track span
+  display: block
+  width: 35%
+  height: 100%
+  background: #1680ed
+  animation: loading-sweep 1.1s ease-in-out infinite
+
+@keyframes loading-sweep
+  from
+    transform: translateX(-110%)
+  to
+    transform: translateX(310%)
+
+.empty-state
+  display: flex
+  min-height: 14rem
+  flex-direction: column
+  align-items: center
+  justify-content: center
+  padding: 2rem 1rem
+  text-align: center
+
+.empty-icon
+  display: grid
+  width: 3.25rem
+  height: 3.25rem
+  margin-bottom: 0.8rem
+  place-items: center
+  border-radius: 1rem
+  background: #eff5fc
+  color: #5980aa
+  font-size: 1.2rem
+
+.empty-state strong
+  color: #31465e
+  font-size: 0.9rem
+
+.empty-state > span:not(.empty-icon)
+  max-width: 23rem
+  margin-top: 0.3rem
+  color: #8796a8
+  font-size: 0.77rem
+
+.empty-action
+  margin-top: 0.55rem
+
+.table-pagination
+  display: flex
+  min-height: 4.15rem
+  align-items: center
+  justify-content: space-between
+  gap: 1rem
+  padding: 0.75rem 1.55rem
+  border-top: 1px solid #edf1f5
+  background: #fcfdff
+
+.pagination-summary
+  color: #8492a3
+  font-size: 0.73rem
+
+.pagination-summary strong
+  color: #53677f
+  font-weight: 650
+
+.pagination-controls
+  display: flex
+  align-items: center
+  gap: 0.55rem
+  color: #8391a2
+  font-size: 0.7rem
+
+.pagination-controls select
+  min-height: 2rem
+  padding: 0.25rem 1.4rem 0.25rem 0.55rem
+  border: 1px solid #e0e7ef
+  border-radius: 0.5rem
+  background: #fff
+  color: #52677e
+  font: inherit
+
+.page-count
+  margin: 0 0.3rem 0 0.55rem
+  color: #63778e
+  white-space: nowrap
+
+.pagination-button
+  width: 2rem
+  height: 2rem
+  border-color: #e3eaf1
+  background: #fff
+
+.confirmation-dialog
+  width: min(27rem, calc(100vw - 2rem))
+
+.confirmation-content
+  display: flex
+  flex-direction: column
+  align-items: center
+  padding: 2rem
+  text-align: center
+
+.confirmation-icon
+  display: grid
+  width: 3.25rem
+  height: 3.25rem
+  place-items: center
+  border-radius: 1rem
+  background: #fff0ee
+  color: #b93831
+  font-size: 1.15rem
+
+.confirmation-content h2
+  margin-top: 1rem
+
+.confirmation-content p
+  margin: 0.45rem 0 0
+  color: #75869a
+  font-size: 0.8rem
+  line-height: 1.6
+
+.confirmation-content p strong
+  color: #43586f
+
+.confirmation-actions
+  display: flex
+  width: 100%
+  justify-content: center
+  gap: 0.65rem
+  margin-top: 1.5rem
+
+.page-footer
+  display: flex
+  justify-content: space-between
+  gap: 1rem
+  padding: 1.2rem 0.2rem 0.2rem
+  color: #8a99aa
+  font-size: 0.69rem
+
+.page-footer span:first-child
+  font-weight: 650
+
+@media (max-width: 1100px)
+  .metric-grid
+    grid-template-columns: repeat(2, minmax(0, 1fr))
+
+  .toolbar
+    grid-template-columns: 1fr
+
+  .stock-filters
+    justify-content: flex-start
+
+@media (max-width: 700px)
+  .topbar-inner,
+  .page-shell
+    width: calc(100% - 2rem)
+
+  .topbar-inner
+    height: 4rem
+
+  .brand
+    gap: 0.5rem
+
+  .brand-product
+    font-size: 0.73rem
+
+  .workspace-indicator
+    font-size: 0
+
+  .workspace-indicator-icon
+    width: 2rem
+    height: 2rem
+    font-size: 0.8rem
+
+  .page-shell
+    padding-top: 1.7rem
+
+  .page-intro
+    align-items: flex-start
+    flex-direction: column
+    gap: 1rem
+    margin-bottom: 1.25rem
+
+  .page-intro .create-product-button
+    width: 100%
+
+  .metric-grid
+    gap: 0.7rem
+    margin-bottom: 1rem
+
+  .metric-card
+    min-height: 6.5rem
+    gap: 0.65rem
+    padding: 0.95rem 0.8rem
+
+  .metric-icon
+    width: 2.25rem
+    height: 2.25rem
+    border-radius: 0.65rem
+    font-size: 0.85rem
+
+  .metric-label
+    font-size: 0.68rem
+
+  .metric-value
+    font-size: 1.4rem
+
+  .metric-currency
+    font-size: 1.15rem
+
+  .metric-caption
+    font-size: 0.62rem
+
+  .section-heading
+    align-items: flex-start
+    flex-direction: column
+    padding: 1.15rem 1rem 1rem
+
+  .snapshot-label
+    font-size: 0.68rem
+
+  .toolbar
+    gap: 1rem
+    padding: 1rem
+
+  .stock-filters
+    display: grid
+    grid-template-columns: 1fr auto 1fr
+    gap: 0.5rem
+  .filter-label
+    grid-column: 1 / -1
+
+  .filter-field
+    width: auto
+
+  .range-separator
+    align-self: end
+    padding-bottom: 0.72rem
+
+  .filter-actions
+    grid-column: 1 / -1
+    justify-content: flex-start
+    margin-top: 0.1rem
+
+  .table-wrap
+    overflow-x: auto
+    padding: 0 0.5rem
+
+  .product-table
+    min-width: 760px
+
+  .table-pagination
+    align-items: flex-start
+    flex-direction: column
+    padding: 0.85rem 1rem
+
+  .pagination-controls
+    width: 100%
+    justify-content: flex-end
+
+  .error-banner
+    align-items: flex-start
+    flex-direction: column
+    margin-inline: 1rem
+
+  .page-footer
+    flex-direction: column
+    gap: 0.25rem
+
+@media (prefers-reduced-motion: reduce)
+  *,
+  *::before,
+  *::after
+    scroll-behavior: auto !important
+    transition-duration: 0.01ms !important

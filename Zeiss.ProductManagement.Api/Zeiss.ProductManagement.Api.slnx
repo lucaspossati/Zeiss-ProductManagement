@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="Zeiss.ProductManagement.Api/Zeiss.ProductManagement.Api.csproj" />
+  <Project Path="Zeiss.ProductManagement.Application/Zeiss.ProductManagement.Application.csproj" />
+  <Project Path="Zeiss.ProductManagement.Domain/Zeiss.ProductManagement.Domain.csproj" />
+  <Project Path="Zeiss.ProductManagement.Infrastructure/Zeiss.ProductManagement.Infrastructure.csproj" />
+  <Project Path="Zeiss.ProductManagement.Tests/Zeiss.ProductManagement.Tests.csproj" />
+  <Project Path="Zeiss.ProductManagement.Worker/Zeiss.ProductManagement.Worker.csproj" />
+</Solution>

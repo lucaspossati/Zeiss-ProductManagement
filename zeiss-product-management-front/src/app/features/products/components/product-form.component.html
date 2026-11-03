@@ -1,0 +1,96 @@
+<form [formGroup]="form" (ngSubmit)="submit()" class="product-form">
+  @if (generalErrors().length > 0) {
+    <div class="form-error-summary" role="alert">
+      @for (error of generalErrors(); track error.code + error.message) {
+        <p>{{ error.message }}</p>
+      }
+    </div>
+  }
+
+  <div class="field-group">
+    <label for="product-name">Product name</label>
+    <input
+      id="product-name"
+      class="form-control"
+      type="text"
+      formControlName="name"
+      autocomplete="off"
+      maxlength="200"
+    />
+    @if (form.controls.name.touched && form.controls.name.invalid) {
+      <small class="field-error" id="product-name-error">
+        Enter a name between 2 and 200 characters.
+      </small>
+    }
+    @for (error of fieldErrors('name'); track error.code + error.message) {
+      <small class="field-error" role="alert">{{ error.message }}</small>
+    }
+  </div>
+
+  <div class="field-group">
+    <label for="product-description">Description</label>
+    <textarea
+      id="product-description"
+      class="form-control"
+      formControlName="description"
+      rows="3"
+      maxlength="1000"
+    ></textarea>
+    @for (error of fieldErrors('description'); track error.code + error.message) {
+      <small class="field-error" role="alert">{{ error.message }}</small>
+    }
+  </div>
+
+  <div class="field-row">
+    <div class="field-group">
+      <label for="product-price">Price</label>
+      <input
+        id="product-price"
+        class="form-control"
+        type="number"
+        formControlName="price"
+        min="0.01"
+        step="0.01"
+        inputmode="decimal"
+      />
+      @if (form.controls.price.touched && form.controls.price.invalid) {
+        <small class="field-error">Price must be greater than zero.</small>
+      }
+      @for (error of fieldErrors('price'); track error.code + error.message) {
+        <small class="field-error" role="alert">{{ error.message }}</small>
+      }
+    </div>
+
+    <div class="field-group">
+      <label for="product-stock">Available stock</label>
+      <input
+        id="product-stock"
+        class="form-control"
+        type="number"
+        formControlName="availableStock"
+        min="0"
+        max="2147483647"
+        step="1"
+        inputmode="numeric"
+      />
+      @if (form.controls.availableStock.touched && form.controls.availableStock.invalid) {
+        <small class="field-error">Stock must be a non-negative whole number.</small>
+      }
+      @for (error of fieldErrors('availableStock'); track error.code + error.message) {
+        <small class="field-error" role="alert">{{ error.message }}</small>
+      }
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <button class="button button-secondary" type="button" (click)="cancel()">Cancel</button>
+    <button class="button button-primary" type="submit" [disabled]="form.invalid || saving()">
+      @if (saving()) {
+        <span class="button-spinner" aria-hidden="true"></span>
+      } @else {
+        <i class="pi pi-check" aria-hidden="true"></i>
+      }
+      {{ product() ? 'Save changes' : 'Create product' }}
+    </button>
+  </div>
+</form>

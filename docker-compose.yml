@@ -1,0 +1,73 @@
+services:
+  zeiss-database:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: ${MSSQL_PID:?Set MSSQL_PID in the root .env file}
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:?Set MSSQL_SA_PASSWORD in the root .env file}
+    volumes:
+      - zeiss-sqlserver-data:/var/opt/mssql
+    networks:
+      - zeiss-private
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - SQLCMDPASSWORD="$${MSSQL_SA_PASSWORD}" /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -C -Q "SELECT 1" -b
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 45s
+    restart: unless-stopped
+
+  zeiss-api:
+    build:
+      context: ./Zeiss.ProductManagement.Api
+      dockerfile: Zeiss.ProductManagement.Api/Dockerfile
+      target: final
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_HTTP_PORTS: "8080"
+      ConnectionStrings__DefaultConnection: "Server=zeiss-database,1433;Database=ZeissProductManagement;User Id=sa;Password=${MSSQL_SA_PASSWORD:?Set MSSQL_SA_PASSWORD in the root .env file};TrustServerCertificate=True;Encrypt=True;"
+      Cors__AllowedOrigins__0: ${FRONTEND_ORIGIN:?Set FRONTEND_ORIGIN in the root .env file}
+    depends_on:
+      zeiss-database:
+        condition: service_healthy
+    networks:
+      - zeiss-private
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - curl --fail --silent http://127.0.0.1:8080/health || exit 1
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+
+  zeiss-frontend:
+    build:
+      context: ./zeiss-product-management-front
+      dockerfile: Dockerfile
+    depends_on:
+      zeiss-api:
+        condition: service_healthy
+    networks:
+      - zeiss-private
+    ports:
+      - "${FRONTEND_BIND_ADDRESS:-127.0.0.1}:${FRONTEND_PORT:-8080}:8080"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - wget -q -O /dev/null http://127.0.0.1:8080/health || exit 1
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+networks:
+  zeiss-private:
+    driver: bridge
+
+volumes:
+  zeiss-sqlserver-data:
