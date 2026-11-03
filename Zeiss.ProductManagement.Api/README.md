@@ -1,138 +1,113 @@
-# ZEISS Product Management — Backend
+# ZEISS Product Management - Backend
 
-.NET 10 backend for managing products and inventory. The solution separates
-domain rules, application use cases, persistence, HTTP API, background
-initialization, and tests into the `Domain`, `Application`, `Infrastructure`,
-`Api`, `Worker`, and `Tests` projects.
+ASP.NET Core 10 Web API for product catalog and inventory management.
+
+The backend follows Clean Architecture, separating business rules, application logic, infrastructure, API endpoints, background services, and automated tests.
+
+## Technologies
+
+- ASP.NET Core 10
+- Entity Framework Core
+- SQL Server 2022
+- FluentValidation
+- Docker
+- xUnit
+
+## Project Structure
+
+```text
+Zeiss.ProductManagement.Api/
+├── Zeiss.ProductManagement.Api/              # HTTP API
+├── Zeiss.ProductManagement.Application/      # Use cases and application logic
+├── Zeiss.ProductManagement.Domain/           # Entities and business rules
+├── Zeiss.ProductManagement.Infrastructure/   # Database and persistence
+├── Zeiss.ProductManagement.Worker/           # Background initialization
+└── Zeiss.ProductManagement.Tests/            # Automated tests
+```
 
 ## Requirements
 
 - .NET 10 SDK
 - Docker Desktop with Docker Compose
-- Node.js `22.22.3` or a version supported by Angular 22 (for the frontend)
-- `dotnet-ef` to create or manually apply migrations
+- Node.js 22 (required only for frontend development)
 
-For the complete Docker deployment, including the Angular frontend and SQL
-Server, use the [workspace deployment guide](../README.md) and its root
-`docker-compose.yml`.
+## Local Development
 
-Check the installed SDK and install the EF Core tool if necessary:
+The following setup runs SQL Server in Docker while the API and frontend run locally.
 
-```powershell
-dotnet --version
-dotnet tool install --global dotnet-ef
-```
+### 1. Start SQL Server
 
-## Start SQL Server with Docker
-
-Run these commands from this folder, where `docker-compose.yml` is located.
-Copy the environment variable template to `.env` and replace the example with
-your own strong password:
+From the backend directory, create your environment file:
 
 ```powershell
 Copy-Item .env.example .env
-notepad .env
+```
+
+Set a strong password for `MSSQL_SA_PASSWORD` in `.env`, then start SQL Server:
+
+```powershell
 docker compose up -d --wait sqlserver
 docker compose ps
 ```
 
-Docker Compose runs SQL Server 2022 Developer, publishes it at
-`localhost,1434`, waits for its health check, and stores database files in the
-Docker volume `sqlserver-data`. The local `.env` file is Git-ignored; do not
-commit or share it.
+SQL Server 2022 runs on `localhost,1434`, with data persisted in a Docker volume.
 
-To follow the startup logs:
+### 2. Configure the database connection
 
-```powershell
-docker compose logs -f sqlserver
-```
+Configure the API connection string using .NET User Secrets.
 
-Stop the container without deleting the database:
-
-```powershell
-docker compose down
-```
-
-To also delete the database and all persisted data (irreversible):
-
-```powershell
-docker compose down --volumes
-```
-
-SQL Server sets the `sa` password when the volume is initialized. Changing
-`.env` later does not change the password already stored in the database; keep
-the original password or update the SQL Server login. Removing the volume
-deletes all database data.
-
-## Configure the API to use the database
-
-For local development, run SQL Server in Docker and the API on the host.
-Configure the API connection string in User Secrets, using the same password
-as in `.env`. Run these commands from the backend root:
+Run from the backend directory:
 
 ```powershell
 $passwordLine = Get-Content .\.env | Where-Object { $_ -match '^MSSQL_SA_PASSWORD=' } | Select-Object -First 1
-if (-not $passwordLine) { throw 'MSSQL_SA_PASSWORD was not found in .env' }
+
+if (-not $passwordLine) {
+    throw 'MSSQL_SA_PASSWORD was not found in .env'
+}
+
 $env:MSSQL_SA_PASSWORD = $passwordLine -replace '^MSSQL_SA_PASSWORD=', ''
 
 dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=localhost,1434;Database=ZeissProductManagement;User Id=sa;Password=$env:MSSQL_SA_PASSWORD;TrustServerCertificate=True;Encrypt=True;" --project .\Zeiss.ProductManagement.Api
+
 Remove-Item Env:\MSSQL_SA_PASSWORD
 ```
 
-User Secrets are stored outside the repository. Do not put passwords in
-`appsettings.json` or other versioned files.
+User Secrets keep local credentials outside the repository.
 
-## Start the API and frontend
-
-After SQL Server is healthy and the connection string is configured, start the
-API from a terminal at the backend root:
+### 3. Run the API
 
 ```powershell
 dotnet run --project .\Zeiss.ProductManagement.Api --launch-profile https
 ```
 
-The `https` profile listens at `https://localhost:7068` and
-`http://localhost:5013`. Trust the ASP.NET development certificate when
-prompted. On startup, the API applies pending migrations and seeds sample data.
+The API is available at:
 
-In another terminal, start Angular:
+- HTTPS: https://localhost:7068
+- HTTP: http://localhost:5013
 
-```powershell
-Set-Location ..\zeiss-product-management-front
-npm ci
-npm start
-```
-
-Open `http://localhost:4200`. In development, the frontend uses
-`https://localhost:7068/api`; the API allows the frontend origin
-`http://localhost:4200` through CORS. To trust the local HTTPS certificate in
-your browser, run this once:
+Trust the development certificate if necessary:
 
 ```powershell
 dotnet dev-certs https --trust
 ```
 
-In this workflow, the API and frontend run on the host. This backend's Docker
-Compose configuration starts SQL Server only; it does not start the API or
-frontend.
+During development, the API applies pending migrations and initializes sample data on startup.
 
-## Migrations and Worker
+### 4. Run the frontend
 
-In Development, the API applies migrations and initializes sample data at
-startup. Production does not run migrations as part of API startup. Use the
-one-shot migration command from the workspace root before starting the
-production API:
-
-```bash
-docker compose run --rm --no-deps -e RUN_MIGRATIONS_ONLY=true zeiss-api
-```
-
-The Worker can also run as a separate process to apply migrations and
-initialize sample data:
+In another terminal:
 
 ```powershell
-dotnet run --project .\Zeiss.ProductManagement.Worker
+cd ..\zeiss-product-management-front
+npm ci
+npm start
 ```
+
+Open http://localhost:4200.
+
+The frontend communicates with the API through `https://localhost:7068/api`.
+
+## Database Migrations
 
 Create a migration after changing the data model:
 
@@ -146,13 +121,25 @@ Apply migrations manually:
 dotnet ef database update --project .\Zeiss.ProductManagement.Infrastructure --startup-project .\Zeiss.ProductManagement.Api
 ```
 
-The design-time factory uses the User Secrets configured for the API project.
-When running the Worker separately, provide the same connection string through
-its `ConnectionStrings__DefaultConnection` environment variable.
+Install the EF Core CLI tool if needed:
 
-## Build and tests
+```powershell
+dotnet tool install --global dotnet-ef
+```
 
-Run these commands from the backend root:
+### Worker
+
+The Worker project can be executed separately to apply migrations and initialize sample data:
+
+```powershell
+dotnet run --project .\Zeiss.ProductManagement.Worker
+```
+
+When running the Worker independently, provide the database connection through the `ConnectionStrings__DefaultConnection` environment variable.
+
+## Build and Tests
+
+Run from the backend directory:
 
 ```powershell
 dotnet restore
@@ -160,20 +147,37 @@ dotnet build
 dotnet test
 ```
 
-## Main endpoints
+## API Endpoints
 
-| Method | Route | Description |
-| --- | --- | --- |
-| `GET` | `/api/products?page=1&pageSize=10` | Lists paginated products; accepts `search`, `minStock`, and `maxStock`. |
-| `POST` | `/api/products` | Creates a product. |
-| `GET` | `/api/products/{id}` | Gets a product by identifier. |
-| `PUT` | `/api/products/{id}` | Updates a product. |
-| `DELETE` | `/api/products/{id}` | Deletes a product. |
-| `POST` | `/api/products/{id}/add-to-stock/{quantity}` | Adds stock. |
-| `POST` | `/api/products/{id}/decrement-stock/{quantity}` | Decreases stock. |
-| `GET` | `/api/products/search?name={name}` | Searches products by name. |
-| `GET` | `/api/products/stock-level?min={min}&max={max}` | Filters products by stock level. |
+| Method | Endpoint                                        | Description                    |
+| ------ | ----------------------------------------------- | ------------------------------ |
+| GET    | `/api/products?page=1&pageSize=10`              | List products with pagination  |
+| POST   | `/api/products`                                 | Create a product               |
+| GET    | `/api/products/{id}`                            | Get a product by ID            |
+| PUT    | `/api/products/{id}`                            | Update a product               |
+| DELETE | `/api/products/{id}`                            | Delete a product               |
+| POST   | `/api/products/{id}/add-to-stock/{quantity}`    | Add stock                      |
+| POST   | `/api/products/{id}/decrement-stock/{quantity}` | Decrease stock                 |
+| GET    | `/api/products/search?name={name}`              | Search products by name        |
+| GET    | `/api/products/stock-level?min={min}&max={max}` | Filter products by stock level |
 
-FluentValidation, model binding, and domain rule errors are returned in
-`BaseResponse.errors`, with an entity, an optional property, a code, and a
-message. The frontend associates property errors with their form fields.
+Product listing also supports the `search`, `minStock`, and `maxStock` query parameters.
+
+## Error Handling
+
+The API uses a consistent `BaseResponse` structure.
+
+Validation and business rule errors are returned through `BaseResponse.errors`, containing:
+
+- Entity
+- Property (optional)
+- Error code
+- Error message
+
+This allows the frontend to associate validation errors with the corresponding form fields.
+
+## Docker Deployment
+
+For the complete application deployment, including the API, Angular frontend, and SQL Server, use the Docker Compose configuration in the repository root.
+
+See the [main README](../README.md) for setup and execution instructions.

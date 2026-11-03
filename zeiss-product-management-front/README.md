@@ -1,24 +1,46 @@
-# ZEISS Product Management — Frontend
+## Getting Started
 
-Angular application for managing the product catalog and inventory.
+### Docker Development
 
-## Requirements
+The recommended development setup uses Docker Compose to run the entire application.
 
-- Node.js `22.22.3` or a version supported by Angular 22
-- npm 10+
-- Docker Desktop with Docker Compose
-- The API and SQL Server running (see the backend README)
+From the repository root:
 
-## Run the application locally
+```powershell
+docker compose up --build -d
+```
 
-The recommended development setup runs SQL Server in Docker and runs the API
-and frontend on the host:
+This starts:
 
-1. Follow the [backend instructions](../Zeiss.ProductManagement.Api/README.md)
-   to create `.env`, start SQL Server, and configure User Secrets.
-2. Start the API with the `https` launch profile. It should be available at
-   `https://localhost:7068`.
-3. From this folder, install dependencies and start Angular:
+- Angular development server
+- ASP.NET Core API
+- SQL Server database
+
+Open the application at:
+
+http://localhost:4200
+
+The frontend communicates with the backend through `/api`. The Angular development proxy forwards these requests to the API container over the private Docker network.
+
+No separate API URL or port configuration is required in the browser.
+
+To view logs:
+
+```powershell
+docker compose logs -f
+```
+
+To stop the application:
+
+```powershell
+docker compose down
+```
+
+### Local Development (Without Docker)
+
+If you prefer to run Angular directly on your machine, make sure SQL Server and the backend API are running first.
+
+From the frontend directory:
 
 ```powershell
 nvm use 22.22.3
@@ -26,63 +48,30 @@ npm ci
 npm start
 ```
 
-Open `http://localhost:4200`. The frontend requests
-`https://localhost:7068/api/products`; the endpoint accepts `page` and
-`pageSize`. If your browser does not trust the local API certificate, run this
-once:
+Open http://localhost:4200.
 
-```powershell
-dotnet dev-certs https --trust
-```
+In this setup, the development environment uses the API URL configured in `src/environments/environment.ts`.
 
-The backend Docker Compose project starts SQL Server only. The API and frontend
-are not included in that Compose project; in the workflow above, both run
-locally on the host.
+## API Configuration
 
-## Docker deployment
+The application uses environment-specific API configuration:
 
-The production Dockerfile builds Angular and serves the static application with
-Nginx. Nginx provides Angular Router fallback to `index.html` and proxies
-`/api` to the backend over the private Docker network. The production API URL
-is the relative path `/api`.
+- `src/environments/environment.ts`: Local development.
+- `src/environments/environment.production.ts`: Production.
 
-For the single Compose deployment, environment configuration, migrations,
-health checks, and operational commands, follow the
-[workspace deployment guide](../README.md).
+In Docker development, `proxy.conf.json` forwards `/api` requests to `http://zeiss-api:8080`.
 
-## API configuration
+In production, Nginx serves the Angular application and proxies `/api` requests to the backend through the private Docker network.
 
-The development API URL is defined in `src/environments/environment.ts`. If
-you change it, keep the `/api` suffix and ensure the API allows the origin
-`http://localhost:4200` through CORS.
+The browser always uses the relative `/api` path in the production environment, avoiding hardcoded backend addresses.
 
-Production builds use `src/environments/environment.production.ts`, whose
-default URL is `/api`. Configure a reverse proxy to forward `/api` requests to
-the backend in production.
+## Docker Deployment
 
-## Project structure
+The frontend includes two Dockerfiles:
 
-```text
-src/
-  app/
-    core/                 Application configuration, interceptors, shared services
-    features/products/    Product pages, forms, models, and services
-    shared/               Components and models reused across features
-    app.config.ts         Standalone and zoneless application configuration
-    app.routes.ts          Lazy-loaded routes
-  environments/           Environment-specific API URLs
-  styles/                 Global styles and design tokens
-```
+- `Dockerfile`: Builds the Angular application and serves it using Nginx.
+- `Dockerfile.dev`: Runs the Angular development server with live reload.
 
-Product-specific components, contracts, and state stay within the `products`
-feature. Shared folders are reserved for code with genuine reuse across
-features.
+The root `docker-compose.yml` orchestrates the frontend, backend, and SQL Server.
 
-## Build and tests
-
-```powershell
-npm run build
-npm test
-```
-
-The production build is generated under `dist/`.
+For complete setup instructions, see the [main README](../README.md).
