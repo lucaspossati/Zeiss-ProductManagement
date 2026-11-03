@@ -414,6 +414,7 @@
   <div class="dialog-content">
     <app-product-form
       [product]="editingProduct()"
+      [visible]="productDialogVisible()"
       [saving]="savingProduct()"
       [validationErrors]="productValidationErrors()"
       (saved)="saveProduct($event)"

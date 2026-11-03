@@ -14,6 +14,7 @@ import { Product, ProductPayload } from '../models/product.model';
 })
 export class ProductFormComponent {
   readonly product = input<Product | null>(null);
+  readonly visible = input(false);
   readonly saving = input(false);
   readonly validationErrors = input<readonly ApiValidationError[]>([]);
   readonly saved = output<ProductPayload>();
@@ -25,21 +26,27 @@ export class ProductFormComponent {
   readonly form = this.formBuilder.nonNullable.group({
     name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(200)]],
     description: ['', Validators.maxLength(1000)],
-    price: [0, [Validators.required, Validators.min(0.01)]],
-    availableStock: [
-      0,
-      [Validators.required, Validators.min(0), Validators.max(2147483647), Validators.pattern(/^\d+$/)]
-    ]
+    price: this.formBuilder.control<number | null>(null, [Validators.required, Validators.min(0.01)]),
+    availableStock: this.formBuilder.control<number | null>(null, [
+      Validators.required,
+      Validators.min(0),
+      Validators.max(2147483647),
+      Validators.pattern(/^\d+$/)
+    ])
   });
 
   constructor() {
     effect(() => {
+      if (!this.visible()) {
+        return;
+      }
+
       const product = this.product();
       this.form.reset({
         name: product?.name ?? '',
         description: product?.description ?? '',
-        price: product?.price ?? 0,
-        availableStock: product?.availableStock ?? 0
+        price: product?.price ?? null,
+        availableStock: product?.availableStock ?? null
       });
     });
 
@@ -59,7 +66,8 @@ export class ProductFormComponent {
   }
 
   submit(): void {
-    if (this.form.invalid) {
+    const { price, availableStock } = this.form.getRawValue();
+    if (this.form.invalid || price === null || availableStock === null) {
       this.form.markAllAsTouched();
       return;
     }
@@ -69,8 +77,8 @@ export class ProductFormComponent {
     this.saved.emit({
       name: value.name.trim(),
       description: description.length > 0 ? description : null,
-      price: value.price,
-      availableStock: value.availableStock
+      price,
+      availableStock
     });
   }
 

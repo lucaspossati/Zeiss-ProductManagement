@@ -1,6 +1,12 @@
 ## Getting Started
 
-### Docker Development
+**Live Demo:** [https://zeiss-product-management.me/products](https://zeiss-product-management.me/products)
+
+The application is deployed and publicly accessible. The link above opens the Products page of the live application.
+
+**Note:** The live demo uses a dedicated production environment with its own SQL Server database, isolated from the development environment.
+
+## Docker Development
 
 The recommended development setup uses Docker Compose to run the entire application.
 
